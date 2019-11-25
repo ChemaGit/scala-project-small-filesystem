@@ -6,10 +6,11 @@ class Directory (override val parentPath: String, override val name: String, val
 
 object Directory {
   val SEPARATOR = "/"
-  val ROOT = "/"
+  val ROOT_PATH = "/"
 
-  def empty(parentPath: String, name: String) =
+  def ROOT: Directory = Directory.empty("","")
+
+  def empty(parentPath: String, name: String): Directory =
     new Directory(parentPath, name, List())
-
 
 }
