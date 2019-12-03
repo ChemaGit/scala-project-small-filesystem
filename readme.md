@@ -9,4 +9,5 @@ This is a little program written in Scala that implements the basic shell Linux 
     - pwd   => to know in what directory we are
     - touch => to create files
     - cd    => to navigate throught directories
+    - rm    => to remove Files and Directories
 ````
