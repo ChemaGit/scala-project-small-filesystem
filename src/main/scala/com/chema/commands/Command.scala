@@ -2,9 +2,12 @@ package com.chema.commands
 
 import com.chema.filesystem.State
 
-trait Command {
-
-  def apply(state: State): State
+trait Command extends (State => State) {
+  /**
+   * with "extends (State => State)", we don't need to put the "def apply(state: State): State"
+   * because functions already have the apply method on them
+   */
+  //def apply(state: State): State
 }
 
 object Command {
@@ -16,6 +19,7 @@ object Command {
   val RM = "rm"
   val ECHO = "echo"
   val EXIT = "exit"
+  val CAT = "cat"
 
   def emptyCommands: Command = new Command {
     override def apply(state: State): State = state
@@ -29,24 +33,17 @@ object Command {
     val tokens: Array[String] = input.split(" ")
 
     if(input.isEmpty || tokens.isEmpty) emptyCommands
-    else if(MKDIR.equals(tokens(0))) {
-      if(tokens.length < 2) incompleteCommand(MKDIR)
-      else new Mkdir(tokens(1))
-    } else if(LS.equals(tokens(0))) new Ls
-      else if(PWD.equals(tokens(0))) new Pwd
-      else if(TOUCH.equals(tokens(0))) {
-        if (tokens.length < 2) incompleteCommand(TOUCH)
-        else new Touch(tokens(1))
-    } else if(CD.equals(tokens(0))) {
-      if(tokens.length < 2) incompleteCommand(CD)
-      else new Cd(tokens(1))
-    } else if(RM.equals(tokens(0))) {
-      if(tokens.length < 2) incompleteCommand(RM)
-      else new Rm(tokens(1))
-    } else if(ECHO.equals(tokens(0))) {
-      if(tokens.length < 2) incompleteCommand(ECHO)
-      else new Echo(tokens.tail)
-    } else if(EXIT.equals(tokens(0))) new Exit
-    else new UnknownCommand
+    else tokens(0) match {
+      case MKDIR => if(tokens.length < 2) incompleteCommand(MKDIR) else new Mkdir(tokens(1))
+      case LS => new Ls
+      case PWD => new Pwd
+      case TOUCH => if (tokens.length < 2) incompleteCommand(TOUCH) else new Touch(tokens(1))
+      case CD => if(tokens.length < 2) incompleteCommand(CD) else new Cd(tokens(1))
+      case RM => if(tokens.length < 2) incompleteCommand(RM) else new Rm(tokens(1))
+      case ECHO => if (tokens.length < 2) incompleteCommand(ECHO) else new Echo(tokens.tail)
+      case CAT => if(tokens.length < 2) incompleteCommand(CAT) else new Cat(tokens(1))
+      case EXIT => new Exit
+      case _ => new UnknownCommand
+    }
   }
 }
